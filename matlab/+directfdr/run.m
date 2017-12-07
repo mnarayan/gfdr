@@ -81,7 +81,13 @@ function [fdr_hat pval_adj results opts] = run(t,tk,varargin)
 		est_pi0 = W_obs./W_hat;
         disp(sprintf('Est Pi_0: %.2f',est_pi0));
         
-		for ii=1:length(tau)
+        if(opts.topk)
+            n_tau = opts.topk;
+        else
+            n_tau = length(tau); 
+        end
+        
+		for ii=1:n_tau
 			[val] = (abs(tk)>tau(ii));
 			R_hat(ii) = mean(sum(val==1,1));
             fdr_hat(ii) = (R_hat(ii)./R_obs(ii)) * est_pi0;
