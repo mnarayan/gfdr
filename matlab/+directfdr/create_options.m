@@ -10,6 +10,9 @@ function options = create_options(varargin)
     options.tau_0 = .2; % Conservative non-rejection region for test statistics
     options.est_pi0 = [];
     
+    % Display on or off; 
+    options.verbose = 0;
+    
     % Bootstrap options for parameter tuning
     options.nBoot = 100;
     options.Tau = linspace(.05,.5,4);

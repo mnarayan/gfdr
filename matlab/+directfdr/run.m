@@ -79,8 +79,9 @@ function [fdr_hat pval_adj results opts] = run(t,tk,varargin)
         % size(sum(val_0(:,1:10,1)))
 		W_hat = mean(sum(val_0==1,1));
 		est_pi0 = W_obs./W_hat;
-        disp(sprintf('Est Pi_0: %.2f',est_pi0));
-        
+        if(opts.verbose)
+            disp(sprintf('Est Pi_0: %.2f',est_pi0));
+        end
         if(opts.topk)
             n_tau = opts.topk;
         else
@@ -91,13 +92,15 @@ function [fdr_hat pval_adj results opts] = run(t,tk,varargin)
 			[val] = (abs(tk)>tau(ii));
 			R_hat(ii) = mean(sum(val==1,1));
             fdr_hat(ii) = (R_hat(ii)./R_obs(ii)) * est_pi0;
-            % if(ii==1)
-            % %     disp('R_hat'); R_hat(ii)
-            % %     disp('R_obs'); R_obs(ii)
-            % %     W_obs
-            % %     W_hat
-            % %     disp('Est. FDR'); fdr_hat(ii)
-            % end
+            if(opts.verbose)            
+                if(ii==1)
+                %     disp('R_hat'); R_hat(ii)
+                %     disp('R_obs'); R_obs(ii)
+                %     W_obs
+                %     W_hat
+                     disp(sprintf('Smallest Est. FDR: %.7f',fdr_hat(ii)));
+                end
+            end
 		end	
 	
 		pval_adj(end) = fdr_hat(end);

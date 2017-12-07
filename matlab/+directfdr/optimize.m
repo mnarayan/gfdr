@@ -2,6 +2,7 @@ function [results, opts] = optimize(Tobs,Tperm,varargin)
     
     
     opts = directfdr.create_options();
+    opts.verbose = 1;
     fdr_all = zeros(length(opts.Tau));
     [fdr_all results_all] = compute_fdr_tau(Tobs,Tperm,opts);
     min_fdr = min(fdr_all);
@@ -11,6 +12,7 @@ function [results, opts] = optimize(Tobs,Tperm,varargin)
     currstate = rng;
     fdr_boot = zeros(opts.nBoot,length(opts.Tau));
     opts.topk = 5; % For speed up. 
+    opts.verbose = 0;
     for bootNo=1:opts.nBoot
         boot_idx = randsample(m,m,1); 
         fdr_boot(bootNo,:) = compute_fdr_tau(...
@@ -24,6 +26,10 @@ function [results, opts] = optimize(Tobs,Tperm,varargin)
     mse_score = compute_mse(fdr_boot,min_fdr);   
     [best_mse, best_idx] = min(mse_score);
     tau_best = opts.Tau(best_idx);
+    
+    disp('Optimized Complement of Rejection Region')
+    disp(sprintf('(0, %.3f)',tau_best));
+    
     results = results_all{best_idx};
     
     opts.bootstate = currstate;
@@ -56,7 +62,7 @@ end
 
 function [fdr_all varargout] = compute_fdr_tau(Tobs,Tperm,opts)
    
-    fdr_type = 'est_fdr'
+    fdr_type = 'est_fdr';
     for tauNo=1:length(opts.Tau)
         opts.tau_0 = opts.Tau(tauNo); 
         if(nargout>=2)
